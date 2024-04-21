@@ -1,7 +1,7 @@
 import React, {
   MutableRefObject,
   createContext,
-  useContext,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -34,17 +34,28 @@ const GameStateProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     INITIAL_GAME_STATE.experienceGainRate
   );
 
-  const gainExperience = () => {
-    setExperiencePoints((prev) => prev + experienceGainRate);
-  };
+  /**
+   * I think memo isn't needed since experienceGainRate is
+   * a comparable dependency value and should only update if
+   * its value truly changes. However, I am worried the timer
+   * function that uses it can "miss" an execution if it
+   * were to change (thus causing the player to miss resources).
+   *
+   * So just in case, I figured it'd be good to memoize.
+   */
+  const memoizedGainExperience = useMemo(() => {
+    return () => {
+      setExperiencePoints((prev) => prev + experienceGainRate);
+    };
+  }, [experienceGainRate]);
 
-  const intervalId = useSetupTimer(gainExperience);
+  const intervalId = useSetupTimer(memoizedGainExperience);
 
   const gameState = {
     experiencePoints,
     experienceGainRate,
     intervalId,
-    gainExperience,
+    gainExperience: memoizedGainExperience,
   };
 
   return (

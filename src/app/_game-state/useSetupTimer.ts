@@ -13,7 +13,7 @@ const useSetupTimer = (callbackEverySecond: () => void) => {
         clearInterval(intervalId.current);
       }
     };
-  }, []);
+  }, [callbackEverySecond]);
 
   return intervalId;
 };
