@@ -5,7 +5,9 @@ const Stats = () => {
   const gameState = useContext(GameStateContext);
   return (
     <div>
-      <ul>Experience Points: {gameState.experiencePoints}</ul>
+      <ul>
+        <li>Experience Points: {gameState.experiencePoints}</li>
+      </ul>
     </div>
   );
 };

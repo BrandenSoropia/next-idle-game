@@ -14,12 +14,14 @@ type GameState = {
   intervalId?: MutableRefObject<NodeJS.Timeout | undefined>;
   experiencePoints: number;
   experienceGainRate: number;
+  gainExperience: () => void;
 };
 
 const INITIAL_GAME_STATE: GameState = {
   intervalId: undefined,
   experiencePoints: INITIAL_EXPERIENCE_POINTS_AMOUNT,
   experienceGainRate: BASE_EXPERIENCE_GAIN_RATE,
+  gainExperience: () => {},
 };
 
 export const GameStateContext = createContext(INITIAL_GAME_STATE);
@@ -42,6 +44,7 @@ const GameStateProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     experiencePoints,
     experienceGainRate,
     intervalId,
+    gainExperience,
   };
 
   return (
