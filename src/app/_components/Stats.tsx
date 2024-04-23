@@ -7,6 +7,7 @@ const Stats = () => {
     <div>
       <ul>
         <li>Experience Points: {gameState.experiencePoints}</li>
+        <li>Digimoney: {gameState.digimoney}</li>
       </ul>
     </div>
   );

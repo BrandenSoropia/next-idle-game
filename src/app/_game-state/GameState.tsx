@@ -5,17 +5,22 @@ import React, {
   useState,
 } from "react";
 import {
+  BASE_DIGIMONEY_GAIN_RATE,
   BASE_EXPERIENCE_GAIN_RATE,
   DIGIMONEY_GAIN_UPGRADES,
   EXPERIENCE_GAIN_UPGRADES,
+  INITIAL_DIGIMONEY_AMOUNT,
   INITIAL_EXPERIENCE_POINTS_AMOUNT,
 } from "./constants";
 import useSetupTimer from "./useSetupTimer";
 
 type GameState = {
-  intervalId?: MutableRefObject<NodeJS.Timeout | undefined>;
+  experienceIntervalId?: MutableRefObject<NodeJS.Timeout | undefined>;
   experiencePoints: number;
   experienceGainRate: number;
+  digimoneyIntervalId?: MutableRefObject<NodeJS.Timeout | undefined>;
+  digimoney: number;
+  digimoneyGainRate: number;
   storeOptions: {
     digimoneyUpgrades: typeof DIGIMONEY_GAIN_UPGRADES;
     experienceGainUpgrades: typeof EXPERIENCE_GAIN_UPGRADES;
@@ -24,9 +29,12 @@ type GameState = {
 };
 
 const INITIAL_GAME_STATE: GameState = {
-  intervalId: undefined,
+  experienceIntervalId: undefined,
   experiencePoints: INITIAL_EXPERIENCE_POINTS_AMOUNT,
   experienceGainRate: BASE_EXPERIENCE_GAIN_RATE,
+  digimoneyIntervalId: undefined,
+  digimoney: INITIAL_DIGIMONEY_AMOUNT,
+  digimoneyGainRate: BASE_DIGIMONEY_GAIN_RATE,
   storeOptions: {
     digimoneyUpgrades: DIGIMONEY_GAIN_UPGRADES,
     experienceGainUpgrades: EXPERIENCE_GAIN_UPGRADES,
@@ -37,13 +45,13 @@ const INITIAL_GAME_STATE: GameState = {
 export const GameStateContext = createContext(INITIAL_GAME_STATE);
 
 const GameStateProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+  // Experience
   const [experiencePoints, setExperiencePoints] = useState(
     INITIAL_GAME_STATE.experiencePoints
   );
   const [experienceGainRate, setExperienceGainRate] = useState(
     INITIAL_GAME_STATE.experienceGainRate
   );
-
   /**
    * I think memo isn't needed since experienceGainRate is
    * a comparable dependency value and should only update if
@@ -58,13 +66,27 @@ const GameStateProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
       setExperiencePoints((prev) => prev + experienceGainRate);
     };
   }, [experienceGainRate]);
+  const experienceIntervalId = useSetupTimer(memoizedGainExperience);
 
-  const intervalId = useSetupTimer(memoizedGainExperience);
+  // Digimoney
+  const [digimoney, setDigimoney] = useState(INITIAL_GAME_STATE.digimoney);
+  const [digimoneyGainRate, setMoneyGainRate] = useState(
+    INITIAL_GAME_STATE.digimoneyGainRate
+  );
+  const memoizedGainMoney = useMemo(() => {
+    return () => {
+      setDigimoney((prev) => prev + experienceGainRate);
+    };
+  }, [experienceGainRate]);
+  const digimoneyIntervalId = useSetupTimer(memoizedGainMoney);
 
   const gameState = {
     experiencePoints,
     experienceGainRate,
-    intervalId,
+    experienceIntervalId,
+    digimoney,
+    digimoneyGainRate,
+    digimoneyIntervalId,
     storeOptions: {
       digimoneyUpgrades: DIGIMONEY_GAIN_UPGRADES,
       experienceGainUpgrades: EXPERIENCE_GAIN_UPGRADES,
