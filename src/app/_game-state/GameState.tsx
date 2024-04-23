@@ -6,6 +6,8 @@ import React, {
 } from "react";
 import {
   BASE_EXPERIENCE_GAIN_RATE,
+  DIGIMONEY_GAIN_UPGRADES,
+  EXPERIENCE_GAIN_UPGRADES,
   INITIAL_EXPERIENCE_POINTS_AMOUNT,
 } from "./constants";
 import useSetupTimer from "./useSetupTimer";
@@ -14,6 +16,10 @@ type GameState = {
   intervalId?: MutableRefObject<NodeJS.Timeout | undefined>;
   experiencePoints: number;
   experienceGainRate: number;
+  storeOptions: {
+    digimoneyUpgrades: typeof DIGIMONEY_GAIN_UPGRADES;
+    experienceGainUpgrades: typeof EXPERIENCE_GAIN_UPGRADES;
+  };
   gainExperience: () => void;
 };
 
@@ -21,6 +27,10 @@ const INITIAL_GAME_STATE: GameState = {
   intervalId: undefined,
   experiencePoints: INITIAL_EXPERIENCE_POINTS_AMOUNT,
   experienceGainRate: BASE_EXPERIENCE_GAIN_RATE,
+  storeOptions: {
+    digimoneyUpgrades: DIGIMONEY_GAIN_UPGRADES,
+    experienceGainUpgrades: EXPERIENCE_GAIN_UPGRADES,
+  },
   gainExperience: () => {},
 };
 
@@ -55,6 +65,10 @@ const GameStateProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     experiencePoints,
     experienceGainRate,
     intervalId,
+    storeOptions: {
+      digimoneyUpgrades: DIGIMONEY_GAIN_UPGRADES,
+      experienceGainUpgrades: EXPERIENCE_GAIN_UPGRADES,
+    },
     gainExperience: memoizedGainExperience,
   };
 
